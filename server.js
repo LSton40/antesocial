@@ -1,11 +1,10 @@
 const express = require('express');
+const db = require('./config/connection');
 
-// const connect = require('./config/connection');
-
-const routes = require('./controllers/api/user_routes')
+const routes = require('./controllers')
 const { MongoClient} = require('mongodb');
-const url = 'mongodb://localhost:27017/';
-const client = new MongoClient(url);
+// const url = 'mongodb://localhost:27017/';
+// const client = new MongoClient(url);
 
 
 const app = express();
@@ -17,26 +16,25 @@ app.use(express.urlencoded({extended: false}));
 app.use(routes);
 
 //NEED DB NAME!!!
-const dbName = '';
+// const dbName = '';
 
-async function connectDb() {
-    await client.connect();
+// async function connectDb() {
+//     await client.connect();
 
-    const db = client.db(dbName);
+//     const db = client.db(dbName);
 
-    //NEED COLLECTION NAME!!!!
-    const fc = db.collection('');
+//     //NEED COLLECTION NAME!!!!
+//     const fc = db.collection('');
 
-    const VARIABLE = await fc.find().toArray();
+//     const VARIABLE = await fc.find().toArray();
 
-    return
-}
+//     return
+// }
 
-connectDb();
+// connectDb();
 
-db.synx({force: false})
-    .then(() => {
-        app.listen(PORT, () => {
-            console.log(`App listening on port ${PORT}!`);
-        });
+db.once('open', () => {
+    app.listen(PORT, () => {
+        console.log(`App listening on port ${PORT}!`);
     });
+});
