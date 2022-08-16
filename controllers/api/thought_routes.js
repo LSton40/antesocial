@@ -3,97 +3,67 @@ const { Reaction, Thought, User } = require('../../models');
 
 
 
-router.get('/', (req, res) => {
-    Thought.find({}, 
-      (err, thoughts) => {
-        if (thoughts) {
-          res.status(200).json(thoughts);
-        } else {
-          console.log('Uh Oh, I have no thoughts!');
-          res.status(500).json({ message: 'How thoughtless of you!' });
-        }
-      })
+router.get('/', async (req, res) => {
+    const thoughts = await Thought.find()
+
+    res.send(thoughts);
 });
 
-router.get('/:thoughtId', (req, res) => {
-    Thought.findOne({ 
+router.get('/:thoughtId', async (req, res) => {
+    const thought = await Thought.findOne({ 
       _id: req.params.thoughtId 
-    }, 
-    (err, thought) => {
-        if (thought) {
-          res.status(200).json(thought);
-        } else {
-          console.log('Uh Oh, brainfart');
-          res.status(500).json({ message: 'How thoughtless of you!' });
-        }
-      })
-});
-
-router.post('/', (req, res) => {
-    Thought.create({
-        thoughtText: req.body.thoughtText,
-        username: req.body.username,
-        userId: req.body.userId
     })
-    .then((thoughts) => {
-        res.json(thoughts)
-    })
+
+    res.send(thought);
+});
+
+router.post('/', async (req, res) => {
+    const new_thought = await Thought.create(req.body);
+
+    const thoughtful_user = await User.findOneAndUpdate({ username: new_thought.username}, {$push: {thoughts: new_thought._id}});
+
+    thoughtful_user.save();
+
+    res.send(new_thought);
 });
 
 
-router.put('/:thoughtId', (req, res) => {
-    Thought.updateOne({
-            _id: req.params.thoughtId
-        },
-        {
-            thoughtText: req.body.thoughtText
-        },
-        {
-          new: true
-        },
-        (err, thought) => {
-            if (thought) {
-              res.status(200).json(thought);
-            } else {
-              console.log("Uh Oh, I'm stuck in a rut");
-              res.status(500).json({ message: "I don't readily change my mind!" });
-            }
-          })
+router.put('/:thoughtId', async (req, res) => {
+  const changed_mind = await Thought.findByIdAndUpdate(req.params.thoughtId, req.body, {new: true});
+    
+  changed_mind.save();
+
+  res.send(changed_mind);
 });
 
-router.delete('/:thoughtId', (req, res) => {
-    Thought.fineOneAndDelete({
-        _id: req.params.thoughtId
-    }, (err, result) => {
-        if (lost_thought) {
-          res.status(200).json(lost_thought);
-          console.log(`Forgot: ${lost_thought}`);
-        } else {
-          console.log("Uh Oh, I can't get it out of my brain!!!");
-          res.status(500).json({ message: 'No!!! Get out of my head!' });
-        }
-      })
+router.delete('/:thoughtId', async (req, res) => {
+    const old_thought = await Thought.findByIdAndDelete(req.params.thoughtId)
+    const ignoramus = await User.findOneAndUpdate({username: old_thought.username}, {$pull: {thoughts: req.params.thoughtId}}, {new: true})
+
+    ignoramus.save()
+    res.send(`${ignoramus.username} has forgotten their thought, "${old_thought.thoughtText}"`);
 });
 
 
-// router.post('/thoughts/:thoughtId/reactions', (req, res) => {
-//     Reaction.create({
-//         where: {
-//             _id: req.params.thoughtId
-//         }
-//     })
-//     .then((thought) => {
-//         res.json(thought)
-//     })
-// });
+router.post('/:thoughtId/reactions', async (req, res) => {
 
-// router.delete('/thoughts/:thoughtId/reactions', (req, res) => {
-//     Reaction.deleteOne({
-//             _id: req.params.thoughtId
-//     })
-//     .then((thought) => {
-//         res.json('Reaction deleted!')
-//     })
-// });
+  const reaction = await Thought.findByIdAndUpdate(req.params.thoughtId, {$push: {reactions: req.body}}, {new: true});
+
+  // reaction.reactions.push(req.body);
+
+  reaction.save();
+
+  res.send(reaction);
+
+});
+
+router.delete('/:thoughtId/reactions', async (req, res) => {
+  const stoic_thought = await Thought.findByIdAndUpdate(req.params.thoughtId, {$pull: {reactions: req.body}}, {new: true});
+
+  stoic_thought.save();
+
+  res.send(`${stoic_thought.username}'s thought has lost a reaction`);
+
+});
 
 module.exports = router;

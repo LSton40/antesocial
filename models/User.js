@@ -1,6 +1,4 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-const Thought = require('./Thought');
+const { Schema, model, SchemaTypes} = require('mongoose');
 
 const userSchema = new Schema({
     username: { 
@@ -17,15 +15,16 @@ const userSchema = new Schema({
             if (!emailRegex.test(email)) {
                 return 'Email validation failed!'
             }
-            // Promise.resolve(false), message: 'Email validation failed'}
     }}},
-    thoughts: [{type: Schema.Types.ObjectId, ref: 'Thought'}],
-    friends: [{type: Schema.Types.ObjectId, ref: 'this'}]
+    thoughts: [{
+        type: SchemaTypes.ObjectId, 
+        ref: 'Thought'
+    }],
+    friends: [this]
 },
 {
     toJSON: {
         virtuals: true,
-
     },
     id: false
 },
@@ -40,14 +39,9 @@ const userSchema = new Schema({
 }
 );
 
-const User = mongoose.model('User', userSchema);
+const User = model('User', userSchema);
 
 
-const wombat = new User({
-    username: "wombat4",
-    email: "wombat4@kangaroo.org"
-})
-
-wombat.save()
+// User.deleteMany({}).then(() => console.log('Users deleted!'))
 
 module.exports = User;

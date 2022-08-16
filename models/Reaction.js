@@ -1,11 +1,9 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-// const ObjectId = Schema.ObjectId;
+const { Schema, Types} = require('mongoose');
 
 const Reaction = new Schema({
     reactionId: { 
-        type: mongoose.ObjectId, 
-        // default: mongoose.ObjectId
+        type: Types.ObjectId, 
+        default: Types.ObjectId
         //default value set to new ObjectId
 
     },
@@ -16,7 +14,8 @@ const Reaction = new Schema({
     },
     username: { 
         type: String, 
-        required: true},
+        required: true
+    },
     createdAt: {
         type: Date, 
         default: Date.now, 

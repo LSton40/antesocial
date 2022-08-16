@@ -2,81 +2,70 @@ const router = require('express').Router();
 const { Reaction, Thought, User } = require('../../models');
 
 
-router.get('/', (req, res) => {
-    User.find({}, (err, users) => {
-        if (err) {
-          res.status(500).send({ message: 'Internal Server Error' });
-        } else {
-          res.status(200).json(users);
-        }
-      });
+router.get('/', async (req, res) => {
+    const users = await User.find();
+
+    res.send(users)
 });
 
 
-router.get('/:userId', (req, res) => {
-    User.findOne({
-        _id: req.params.id
-    }, (err, user) => {
-        if (err) {
-          res.status(500).send({ message: 'Internal Server Error' });
-        } else {
-          res.status(200).json(user);
-        }
-      });
+router.get('/:userId', async (req, res) => {
+    const user = await User.findOne({
+        _id: req.params.userId
+    })
+      .populate('thoughts')
+      .populate('friends')
+
+    res.send(user);
+
 })
 
-router.post('/', (req, res) => {
-    User.create(req.body, (err, new_user) => {
-        if (err) {
-          res.status(500).send({ message: 'Internal Server Error' });
-        } else {
-          res.status(200).json(new_user);
-        }
-      });
+router.post('/', async (req, res) => {
+    const new_user = await User.create(req.body);
+
+    res.send(new_user);
 });
 
 
-router.put('/:userId', (req, res) => {
-    User.updateOne({
+router.put('/:userId', async (req, res) => {
+    const updated_user = await User.updateOne({
         _id: req.params.userId
     }, 
     req.body, 
     {
         new: true
-    }, 
-    (err, updated_user) => {
-        if (err) {
-          res.status(500).send({ message: 'Internal Server Error' });
-        } else {
-          res.status(200).json(updated_user);
-        }
-      });
+    });
+
+    updated_user.save();
+
+    res.send(updated_user);
 });
 
-router.delete('/:userId', (req, res) => {
-    User.deleteOne({
-            _id: req.params.userId
+router.delete('/:userId', async (req, res) => {
+    const former_user = await User.findByIdAndDelete(req.params.userId);
 
+    const ephemeral_thoughts = await Thought.deleteMany({username: former_user.username})
         //ALSO DELETE ASSOCIATED THOUGHTS
-    }, 
-    (err, user_gone) => {
-        if (err) {
-          res.status(500).send({ message: 'Internal Server Error' });
-        } else {
-          res.status(200).json(`${user_gone}, with all their dreams, is destroyed!`);
-        }
-      });
+
+    res.send(`${former_user.username} and all thoughts deleted!`)
+
 })
 
 
-router.post('/:userId/friends/:friendId', (req, res) => {
-    // User.
-    // { _id: req.params.userId, friend_id: req.params.friendId}
+router.post('/:userId/friends/:friendId', async (req, res) => {
+  const new_friend = await User.findByIdAndUpdate(req.params.userId, {$push: {friends: req.params.friendId}}, {new: true});
+
+  new_friend.save();
+
+  res.send(new_friend);
 })
 
-router.delete('/:userId/friends/:friendId', (req, res) => {
-    // User.
-    // { _id: req.params.userId, friend_id: req.params.friendId}
+router.delete('/:userId/friends/:friendId', async (req, res) => {
+  const friendless = await User.findByIdAndUpdate(req.params.userId, {$pull: {friends: req.params.friendId}}, {new: true});
+
+  friendless.save();
+
+  res.send(friendless);
 })
 
 
