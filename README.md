@@ -10,7 +10,7 @@ As well as creating new Users, Thoughts, Friend associations, and Reactions, a u
 
 The AnteSocial API is a backend software only and requires a third party platform to interface. Insomnia is used in the demonstration video.
 
-Link to video walkthrough: [AnteSocial Social-Networking Walkthrough]()
+Link to video walkthrough: [AnteSocial Social-Networking Walkthrough](https://drive.google.com/file/d/1IONDuqcC2yQS65ThRR3oxaxdrWymO34a/view)
 
 ## Table of Contents  
 

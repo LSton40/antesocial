@@ -41,7 +41,7 @@ router.delete('/:userId', async (req, res) => {
 
 //POST Request to find and update a User by Id by adding a Friend
 router.post('/:userId/friends/:friendId', async (req, res) => {
-    const new_friend = await User.findByIdAndUpdate(
+    let new_friend = await User.findByIdAndUpdate(
         req.params.userId, {$push: {friends: req.params.friendId}}, {new: true}
     );
     new_friend.save();
@@ -50,7 +50,7 @@ router.post('/:userId/friends/:friendId', async (req, res) => {
 
 //DELETE Request to find and update a User by Id by deleting a Friend
 router.delete('/:userId/friends/:friendId', async (req, res) => {
-    const friendless = await User.findByIdAndUpdate(
+    let friendless = await User.findByIdAndUpdate(
         req.params.userId, {$pull: {friends: req.params.friendId}}, {new: true}
     );
     friendless.save();
