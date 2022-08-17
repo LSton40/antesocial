@@ -38,7 +38,7 @@ router.delete('/:thoughtId', async (req, res) => {
     const ignoramus = await User.findOneAndUpdate(
       {username: old_thought.username}, {$pull: {thoughts: req.params.thoughtId}}, {new: true}
     );
-    ignoramus.save()
+    ignoramus.save();
     res.send(`${ignoramus.username} has forgotten their thought, "${old_thought.thoughtText}"`);
 });
 

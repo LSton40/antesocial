@@ -25,8 +25,8 @@ router.post('/', async (req, res) => {
 
 //PUT Request to find and update a User by Id 
 router.put('/:userId', async (req, res) => {
-    const updated_user = await User.updateOne(
-        { id: req.params.userId }, req.body, { new: true }
+    const updated_user = await User.findByIdAndUpdate(
+        req.params.userId, req.body, { new: true }
     );
     updated_user.save();
     res.send(updated_user);
