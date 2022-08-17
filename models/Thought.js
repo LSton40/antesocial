@@ -2,6 +2,7 @@ const { Schema, model, SchemaTypes } = require('mongoose');
 
 const Reaction = require('./Reaction');
 
+//Defines Thought Schema
 const thoughtSchema = new Schema({
     thoughtText: { 
         type: String, 
@@ -9,6 +10,7 @@ const thoughtSchema = new Schema({
         minLength: 1,
         maxLength: 280
     },
+    //Property showing formatted date and time that a Thought is created
     createdAt: { 
         type: Date, 
         default: Date.now, 
@@ -19,11 +21,10 @@ const thoughtSchema = new Schema({
         type: String, 
         required: true
     },
+    //Array referencing the Reaction Schema
     reactions: [Reaction]
 },
-// {
-//     timestamps: true
-// },
+//Virtual to get a count of the total number of Reactions a thought is given
 {
     virtuals: {
         reactionCount: {
@@ -34,6 +35,7 @@ const thoughtSchema = new Schema({
     }
 });
 
+//Sets a model based on the Thought Schema
 const Thought = model('Thought', thoughtSchema);
 
 module.exports = Thought;

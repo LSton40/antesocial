@@ -1,5 +1,6 @@
 const { Schema, model, SchemaTypes} = require('mongoose');
 
+//Defines User Schema
 const userSchema = new Schema({
     username: { 
         type: String, 
@@ -10,16 +11,19 @@ const userSchema = new Schema({
         type: String, 
         required: true, 
         unique: true, 
+        //A validator to test whether the String matches an email pattern
         validate: {validator: (email) => {
             const emailRegex = /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/
             if (!emailRegex.test(email)) {
                 return 'Email validation failed!'
             }
     }}},
+    //Array referencing Thought model
     thoughts: [{
         type: SchemaTypes.ObjectId, 
         ref: 'Thought'
     }],
+    //A self-referencing array, categorizing other Users as friends
     friends: [this]
 },
 {
@@ -28,6 +32,7 @@ const userSchema = new Schema({
     },
     id: false
 },
+//Virtual to get a count of the total number of friends
 {
     virtuals: {
         friendCount: {
@@ -39,9 +44,7 @@ const userSchema = new Schema({
 }
 );
 
+//Sets a model based on the User Schema
 const User = model('User', userSchema);
-
-
-// User.deleteMany({}).then(() => console.log('Users deleted!'))
 
 module.exports = User;

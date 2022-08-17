@@ -1,5 +1,6 @@
 const { Schema, Types} = require('mongoose');
 
+//Defines Reaction Schema
 const Reaction = new Schema({
     reactionId: { 
         type: Types.ObjectId, 
@@ -16,6 +17,7 @@ const Reaction = new Schema({
         type: String, 
         required: true
     },
+    //Property showing formatted date and time that a Reaction is created
     createdAt: {
         type: Date, 
         default: Date.now, 
@@ -23,8 +25,9 @@ const Reaction = new Schema({
         //use getter method to format timestamp
     }
 },
-{
-  timestamps: true  
-});
+// {
+//   timestamps: true  
+// }
+);
 
 module.exports = Reaction;
