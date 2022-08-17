@@ -3,7 +3,7 @@ const { Reaction, Thought, User } = require('../../models');
 
 //GET Request to find and view all Users
 router.get('/', async (req, res) => {
-    const users = await User.find();
+    const users = await User.find().populate('friends')
     res.send(users)
 });
 
@@ -12,8 +12,8 @@ router.get('/:userId', async (req, res) => {
     const user = await User.findOne({
         _id: req.params.userId
     })
-      .populate('thoughts')
-      .populate('friends')
+    .populate('thoughts')
+    .populate('friends')
     res.send(user);
 });
 

@@ -1,4 +1,5 @@
 const { Schema, Types} = require('mongoose');
+var moment = require('moment');
 
 //Defines Reaction Schema
 const Reaction = new Schema({
@@ -20,14 +21,15 @@ const Reaction = new Schema({
     //Property showing formatted date and time that a Reaction is created
     createdAt: {
         type: Date, 
-        default: Date.now, 
-        get: date => {return date.getMonth() + ' ' + date.getDate() + ' ' + date.getFullYear() + ' at ' + date.getHours() + ':' + date.getMinutes() + '.' + date.getSeconds()}
-        //use getter method to format timestamp
+        default: Date.now,
+        get: (date) => date && moment(date).format("MMMM Do YYY, h:mm:ss a"),
     }
 },
-// {
-//   timestamps: true  
-// }
+{
+    timestamps: {createdAt: true, updatedAt: false},
+    toJSON: {getters: true, virtuals: true},
+    id: false
+}
 );
 
 module.exports = Reaction;

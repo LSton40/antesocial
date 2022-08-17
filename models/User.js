@@ -24,25 +24,23 @@ const userSchema = new Schema({
         ref: 'Thought'
     }],
     //A self-referencing array, categorizing other Users as friends
-    friends: [this]
+    friends: [{
+        type: SchemaTypes.ObjectId,
+        ref: 'User'
+    }]
 },
 {
     toJSON: {
         virtuals: true,
     },
     id: false
-},
-//Virtual to get a count of the total number of friends
-{
-    virtuals: {
-        friendCount: {
-            get() {
-                return this.friends.length;
-            }
-        }
-    }
 }
 );
+
+//Virtual to get a count of the total number of friends
+userSchema.virtual('friendCount').get(function() {
+    return this.friends.length;
+});
 
 //Sets a model based on the User Schema
 const User = model('User', userSchema);
